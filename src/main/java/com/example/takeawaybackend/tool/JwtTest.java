@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class JwtTest {
-    public static String KEY="!Q@#E$RF%WE#!";
+    public static String KEY="!Q1ggggggggggggggggggggggggggggggggggggggggggggggfjyfgmffgfghfhfgnfghfnhgfmgh";
     public static long time=10*3600*1000;
     public static long longTime=2*24*3600*1000;
     public static Map<String,Object> getToken(String username, String isAdmin){
@@ -24,7 +24,7 @@ public class JwtTest {
                 .setId(UUID.randomUUID().toString())
                 .signWith(SignatureAlgorithm.HS256, KEY)
                 .compact();
-        String longt=jwtBuilder
+        String long_token=jwtBuilder
                 .setHeaderParam("type","JWT")
                 .setHeaderParam("alg","HS256")
                 .claim("username",username)
@@ -35,21 +35,21 @@ public class JwtTest {
                 .signWith(SignatureAlgorithm.HS256, KEY)
                 .compact();
         tokenmap.put("token",token);
-        tokenmap.put("longt",longt);
+        tokenmap.put("long_token",long_token);
         return tokenmap;
     }
-    //判断token和longt是否过期
-    public static int isToken(String token,String longt){
+    //判断token和long_token是否过期
+    public static int isToken(String token,String long_token){
         System.out.println("token:"+token);
-        System.out.println("longt:"+longt);
-        if(longt==null||longt.equals("")){
+        System.out.println("long_token:"+long_token);
+        if(long_token==null||long_token.equals("")){
             return 0;
         }
 
         Jws<Claims> claimsJws=null;
         try{
             System.out.println("KEY:"+KEY);
-            claimsJws= Jwts.parser().setSigningKey(KEY).parseClaimsJws(longt);
+            claimsJws= Jwts.parser().setSigningKey(KEY).parseClaimsJws(long_token);
             System.out.println(claimsJws);
         }catch (ExpiredJwtException e){
             e.printStackTrace();
@@ -64,12 +64,12 @@ public class JwtTest {
             System.out.println(claimsJws);
         }catch (ExpiredJwtException e){
             e.printStackTrace();
-            return 1;//token过期，longt未过期
+            return 1;//token过期，long_token未过期
         }catch (JwtException e) {
             // 其他异常处理
             e.printStackTrace();
             // 进行适当的处理
         }
-        return 2;//token,longt未过期
+        return 2;//token,long_token未过期
     }
 }

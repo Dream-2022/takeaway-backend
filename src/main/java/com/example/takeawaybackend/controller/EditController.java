@@ -26,7 +26,7 @@ public class EditController {
     private UserDao userDao;
     @PostMapping("/nickname")
     public DataResult nickname(@RequestBody LoginData loginData){
-        System.out.println("收到的数据是："+loginData.getNickname()+','+loginData.getOldValue());
+        System.out.println("收到的数据是："+loginData.getNickname()+','+loginData.getUsername());
         QueryWrapper<User> wrapper=new QueryWrapper<User>()
                 .eq("nickname",loginData.getNickname());
         User user1=userDao.selectOne(wrapper);
@@ -40,7 +40,7 @@ public class EditController {
         user.setNickname(loginData.getNickname());
         System.out.println(user);
         QueryWrapper<User> wrapper1=new QueryWrapper<User>()
-                .eq("nickname",loginData.getOldValue());
+                .eq("username",loginData.getUsername());
         int flag=userDao.update(user,wrapper1);
         System.out.println(flag);
         return DataResult.success(user);

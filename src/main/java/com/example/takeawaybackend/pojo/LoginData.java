@@ -1,7 +1,8 @@
 package com.example.takeawaybackend.pojo;
 
 public class LoginData {
-
+    private Integer id;
+    private Integer pid;
     private String username;
     private String password;
     private String email;
@@ -24,6 +25,22 @@ public class LoginData {
         this.nickname = nickname;
         this.oldValue = oldValue;
         this.gender = gender;
+    }
+
+    public Integer getPid() {
+        return pid;
+    }
+
+    public void setPid(Integer pid) {
+        this.pid = pid;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getBirth() {

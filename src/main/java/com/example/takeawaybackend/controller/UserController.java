@@ -5,12 +5,17 @@ import com.example.takeawaybackend.bean.User;
 import com.example.takeawaybackend.dao.UserDao;
 import com.example.takeawaybackend.pojo.LoginData;
 import com.example.takeawaybackend.tool.DataResult;
+import com.example.takeawaybackend.tool.JwtTest;
 import com.example.takeawaybackend.tool.ObtainUsername;
 import com.example.takeawaybackend.tool.SendEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -18,9 +23,13 @@ import java.util.Random;
 import static com.example.takeawaybackend.tool.ResponseCode.*;
 
 @RestController
-@RequestMapping("/api/pre")
+@RequestMapping("/api")
 public class UserController {
     public static User userStatic;
+    @Autowired
+    HttpServletResponse response;
+    @Autowired
+    HttpServletRequest request;
     @Autowired
     private UserDao userDao;
     private static Map<String, String> map = new HashMap<>();
@@ -44,7 +53,23 @@ public class UserController {
         if(user1==null){
             return DataResult.fail(ACCOUNT_ERROR);
         }
+        System.out.println(user1.getPicture());
+        System.out.println(user1.getProfile());
+        if(user1.getPicture()==null){
+            user1.setPicture("http://localhost:8080/upload/headSculpture.jpeg");
+        }
+        if (user1.getProfile()==null) {
+            user1.setProfile("该用户很懒，什么都没写");
+        }
+        if (user1.getBirthday()==null) {
+            LocalDateTime currentTime=LocalDateTime.now();
+            Timestamp timestamp=Timestamp.valueOf(currentTime);
+            user1.setBirthday(timestamp);
+        }
         userStatic=user1;
+        Map<String,Object> tokenmap = JwtTest.getToken(loginData.getUsername(),userStatic.getUserType());
+        response.addHeader("token", String.valueOf(tokenmap.get("token")));
+        response.addHeader("long_token", String.valueOf(tokenmap.get("long_token")));
         return DataResult.success(user1);
     }
     //获取邮箱验证码

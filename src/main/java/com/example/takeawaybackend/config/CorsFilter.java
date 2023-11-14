@@ -1,6 +1,7 @@
 package com.example.takeawaybackend.config;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -12,7 +13,8 @@ import java.io.IOException;
 /**
  * 配置跨域
  */
-@WebFilter("/api/**")
+@WebFilter("/**")
+@Order(-1)
 @Component
 public class CorsFilter implements Filter {
     @Override
@@ -22,6 +24,7 @@ public class CorsFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("跨域问题拦截器");
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
 
@@ -31,21 +34,31 @@ public class CorsFilter implements Filter {
             response.setHeader("Access-Control-Allow-Origin", origin);
         }
 
+        //response.setHeader("Access-Control-Allow-Origin","http://localhost:5173");
+
+        System.out.println(response);
+
         // 自适应所有自定义头
         String headers = request.getHeader("Access-Control-Request-Headers");
         if(StringUtils.isNotBlank(headers)) {
             response.setHeader("Access-Control-Allow-Headers", headers);
-            response.setHeader("Access-Control-Expose-Headers", headers);
+            response.setHeader("Access-Control-Expose-Headers", "*,long_token,token"); // 修改这行
         }
+        else response.setHeader("Access-Control-Allow-Headers","Content-Type, token,long_token");
+        //response.setHeader("Access-Control-Allow-Headers","Content-Type, token,long_token");
+        response.setHeader("Access-Control-Expose-Headers", "*,long_token,token");
 
         // 允许跨域的请求方法类型
-        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST,GET,DELETE,OPTIONS,PUT");
         // 预检命令（OPTIONS）缓存时间，单位：秒
+
+
         response.setHeader("Access-Control-Max-Age", "3600");
         // 明确许可客户端发送Cookie，不允许删除字段即可
         response.setHeader("Access-Control-Allow-Credentials", "true");
 
         filterChain.doFilter(request, response);
+
     }
 
     @Override

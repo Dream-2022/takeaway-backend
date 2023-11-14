@@ -14,10 +14,13 @@ public class Shop {
     private Integer userId;
     private String name;
     private String detail;
+    private String state;
     private String picture;
+    private String background;
     private Integer saleNum;
     @TableField(exist = false)
     private String saleStr;
+    private Float packing;
     private Timestamp createAt;
     //评分
     private Float score;
