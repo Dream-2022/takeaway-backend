@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
-public class Setmeal_detail {
+public class Description {
     @TableId(type= IdType.AUTO)
     private Integer id;
-    private Integer dishId;
-
-
+    private String descriptionName;
 }

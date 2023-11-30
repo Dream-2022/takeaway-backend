@@ -9,13 +9,14 @@ import lombok.Data;
 public class Dish {
     @TableId(type= IdType.AUTO)
     private Integer id;
-    @TableField(exist = false)
-    private String idStr;
     private String dishName;
     private String picture;
     private Float price;
-    private Integer number;
-    private String saleState;
+    private Integer categoryId;//店内种类id
+    @TableField(exist = false)
+    private String categoryName;
+    private Integer number;//库存量（-1为充足， 0为无库存）
+    private String saleState;//销售状态（1：可售；0：不可售）
     private Integer sale;//销售量
     private String detail;//描述
     private Float pack;//打包费

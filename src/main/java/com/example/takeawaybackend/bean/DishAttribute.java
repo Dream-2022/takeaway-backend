@@ -5,11 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
-public class Dish_flavor_detail {
+public class DishAttribute {
     @TableId(type= IdType.AUTO)
     private Integer id;
-    private Integer flavor_id;
-    private String detail;
+    private Integer dishId;
+    private String attributeName;
+    private String checked;
 
 
 }

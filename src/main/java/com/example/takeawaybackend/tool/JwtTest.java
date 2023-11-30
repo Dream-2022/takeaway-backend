@@ -63,6 +63,7 @@ public class JwtTest {
             claimsJws=Jwts.parser().setSigningKey(KEY).parseClaimsJws(token);
             System.out.println(claimsJws);
         }catch (ExpiredJwtException e){
+            System.out.println("JWT过期");
             e.printStackTrace();
             return 1;//token过期，long_token未过期
         }catch (JwtException e) {
