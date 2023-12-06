@@ -22,5 +22,6 @@ public class Dish {
     private Float pack;//打包费
     private String weight;//分量
     private String material;//原料
-
+    @TableField(exist = false)
+    private Integer pageNum;//页数
 }

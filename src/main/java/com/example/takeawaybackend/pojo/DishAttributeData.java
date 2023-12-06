@@ -1,5 +1,7 @@
 package com.example.takeawaybackend.pojo;
 
+import com.example.takeawaybackend.bean.DishFlavor;
+
 import java.util.List;
 
 public class DishAttributeData {
@@ -7,10 +9,18 @@ public class DishAttributeData {
     private Integer dishId;
     private String attributeName;
     private String checked;
-    private List<DishFlavorData> flavorList;
+    private List<DishFlavor> flavorList;
 
     public Integer getId() {
         return id;
+    }
+
+    public List<DishFlavor> getFlavorList() {
+        return flavorList;
+    }
+
+    public void setFlavorList(List<DishFlavor> flavorList) {
+        this.flavorList = flavorList;
     }
 
     public void setId(Integer id) {
@@ -41,11 +51,5 @@ public class DishAttributeData {
         this.checked = checked;
     }
 
-    public List<DishFlavorData> getFlavorList() {
-        return flavorList;
-    }
 
-    public void setFlavorList(List<DishFlavorData> flavorList) {
-        this.flavorList = flavorList;
-    }
 }

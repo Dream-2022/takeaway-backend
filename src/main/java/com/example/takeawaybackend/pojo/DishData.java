@@ -17,6 +17,16 @@ public class DishData {
     private Float pack;
     private String weight;
     private String material;
+    private Integer pageNum;
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
     private List<DishAttributeData> attributeList;
 
     public List<DishAttributeData> getAttributeList() {
