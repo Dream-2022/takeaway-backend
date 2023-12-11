@@ -3,7 +3,24 @@ package com.example.takeawaybackend.pojo;
 public class CategoryData {
     private Integer id;
     private Integer shopId;
-    private Integer categoryName;
+    private String categoryName;
+    private String categoryContent;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCategoryContent() {
+        return categoryContent;
+    }
+
+    public void setCategoryContent(String categoryContent) {
+        this.categoryContent = categoryContent;
+    }
 
     public Integer getId() {
         return id;
@@ -21,11 +38,5 @@ public class CategoryData {
         this.shopId = shopId;
     }
 
-    public Integer getCategoryName() {
-        return categoryName;
-    }
 
-    public void setCategoryName(Integer categoryName) {
-        this.categoryName = categoryName;
-    }
 }

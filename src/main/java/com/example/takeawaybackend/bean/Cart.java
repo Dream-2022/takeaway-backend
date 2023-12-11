@@ -5,11 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
-public class Shopping_detail {
+public class Cart {
     @TableId(type= IdType.AUTO)
     private Integer id;
-    private Integer shopping_id;
-    private Integer dish_id;
-
-
+    private Integer userId;
+    private Integer shopId;
+    private String detailJson;
 }

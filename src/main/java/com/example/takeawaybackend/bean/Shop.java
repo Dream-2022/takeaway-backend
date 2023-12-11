@@ -17,6 +17,12 @@ public class Shop {
     private String addressProvince;
     private String addressCity;
     private String addressCounty;
+    @TableField(exist = false)
+    private String addressProvinceName;
+    @TableField(exist = false)
+    private String addressCityName;
+    @TableField(exist = false)
+    private String addressCountyName;
     private String addressDetail;//商家详细地址
     private String profile;//商家简介
     private String logoPhoto;//门店logo

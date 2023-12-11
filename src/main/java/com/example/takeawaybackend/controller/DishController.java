@@ -3,12 +3,13 @@ package com.example.takeawaybackend.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.takeawaybackend.bean.*;
+import com.example.takeawaybackend.bean.Category;
+import com.example.takeawaybackend.bean.Description;
+import com.example.takeawaybackend.bean.Dish;
+import com.example.takeawaybackend.bean.DishShop;
 import com.example.takeawaybackend.dao.*;
-import com.example.takeawaybackend.pojo.DishAttributeData;
 import com.example.takeawaybackend.pojo.DishData;
 import com.example.takeawaybackend.tool.DataResult;
-import com.example.takeawaybackend.tool.ObtainUsername;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,8 +81,7 @@ public class DishController {
             QueryWrapper<Dish> wrapper1=new QueryWrapper<Dish>()
                     .eq("id",dishShop.getDishId());
             Dish dish=dishDao.selectOne(wrapper1);
-            System.out.println(dish.getPicture());
-            if(dish.getPicture().equals("")){
+            if(dish.getPicture()==null){
                 dish.setPicture("http://localhost:8080/upload/None.webp");
             }
             //根据dish_id查找categoryName
@@ -149,11 +149,43 @@ public class DishController {
             dish.setPageNum((int) iPageList.getPages());
             if(dishShop!=null){
                 dish.setCategoryName(obtainCategoryName(dish.getCategoryId()));
+                if(dish.getPicture()==null){
+                    dish.setPicture("http://localhost:8080/upload/None.gif");
+                }
                 dishes.add(dish);
             }
         }
         System.out.println(dishes);
         return DataResult.success(dishes);
+    }
+    //在商家内通过输入关键词查找商品
+    @PostMapping("/selectDishByValue")
+    public DataResult selectDishByValue(@RequestBody DishData dishData){
+        System.out.println("selectDishByValue");
+        System.out.println("收到的数据是："+dishData.getShopId()+","+dishData.getSearchInput());
+
+        QueryWrapper<DishShop> wrapper=new QueryWrapper<DishShop>()
+                .eq("shop_id",dishData.getShopId());
+
+        List<DishShop> dishShopList=dishShopDao.selectList(wrapper);
+        List<Dish> dishList=new ArrayList<>();
+        for (DishShop dishShop : dishShopList) {
+            QueryWrapper<Dish> wrapper1=new QueryWrapper<Dish>()
+                    .eq("id",dishShop.getDishId())
+                    .like("dish_name",dishData.getSearchInput())
+                    .or()
+                    .like("detail",dishData.getDetail());
+            Dish dish=dishDao.selectOne(wrapper1);
+            System.out.println(dish);
+            if(dish!=null){
+                if(dish.getPicture()==null){
+                    dish.setPicture("http://localhost:8080/upload/None.gif");
+                }
+                dishList.add(dish);
+            }
+
+        }
+        return DataResult.success(dishList);
     }
     //根据categoryId找到name
     private String obtainCategoryName(int categoryId){
@@ -183,7 +215,6 @@ public class DishController {
 
         Dish dish=new Dish();
         //生成一个唯一dish_id
-        String newStr = ObtainUsername.obtainUsername();
         dish.setDishName(dishData.getDishName());
         dish.setCategoryId(category.getId());
         dish.setPicture(dishData.getPicture());
@@ -203,31 +234,48 @@ public class DishController {
         int insert1=dishShopDao.insert(dishShop);
         System.out.println(insert1+","+dishData);
 
-        //属性和口味的添加
-        System.out.println(dish.getId());
-        System.out.println(dishData.getAttributeList());
-        List<DishAttributeData> attributeDataList= dishData.getAttributeList();
-        for (DishAttributeData dishAttributeData : attributeDataList) {
-            System.out.println(dishAttributeData.getAttributeName());
-            System.out.println(dishAttributeData.getChecked());
-            DishAttribute dishAttribute=new DishAttribute();
-            dishAttribute.setDishId(dish.getId());
-            dishAttribute.setChecked(dishAttributeData.getChecked());
-            dishAttribute.setAttributeName(dishAttributeData.getAttributeName());
-
-            int result=dishAttributeDao.insert(dishAttribute);
-            System.out.println("插入"+dishAttributeData.getAttributeName()+":"+result);
-
-            List<DishFlavor> dishFlavorList=dishAttributeData.getFlavorList();
-            for (DishFlavor dishFlavorData : dishFlavorList) {
-                DishFlavor dishFlavor=new DishFlavor();
-                dishFlavor.setFlavorName(dishFlavorData.getFlavorName());
-                dishFlavor.setPrice(dishFlavorData.getPrice());
-                dishFlavor.setAttributeId(dishAttribute.getId());
-                int result1=dishFlavorDao.insert(dishFlavor);
-                System.out.println("插入"+dishFlavor.getFlavorName()+":"+result1);
-            }
-        }
+//        //属性和口味的添加
+//        System.out.println(dish.getId());
+//        System.out.println(dishData.getAttributeList());
+//        List<DishAttributeData> attributeDataList= dishData.getAttributeList();
+//        for (DishAttributeData dishAttributeData : attributeDataList) {
+//            System.out.println(dishAttributeData.getAttributeName());
+//            System.out.println(dishAttributeData.getChecked());
+//            DishAttribute dishAttribute=new DishAttribute();
+//            dishAttribute.setDishId(dish.getId());
+//            dishAttribute.setChecked(dishAttributeData.getChecked());
+//            dishAttribute.setAttributeName(dishAttributeData.getAttributeName());
+//
+//            int result=dishAttributeDao.insert(dishAttribute);
+//            System.out.println("插入"+dishAttributeData.getAttributeName()+":"+result);
+//
+//            List<DishFlavor> dishFlavorList=dishAttributeData.getFlavorList();
+//            for (DishFlavor dishFlavorData : dishFlavorList) {
+//                DishFlavor dishFlavor=new DishFlavor();
+//                dishFlavor.setFlavorName(dishFlavorData.getFlavorName());
+//                dishFlavor.setPrice(dishFlavorData.getPrice());
+//                dishFlavor.setAttributeId(dishAttribute.getId());
+//                int result1=dishFlavorDao.insert(dishFlavor);
+//                System.out.println("插入"+dishFlavor.getFlavorName()+":"+result1);
+//            }
+//        }
         return DataResult.success(dish);
+    }
+    //通过categoryId找到所有的商品
+    @PostMapping("/selectDishByCategoryId")
+    public DataResult selectDishByCategoryId(@RequestBody DishData dishData){
+        System.out.println("selectDishByCategoryId");
+        System.out.println("收到的数据是："+dishData.getCategoryId());
+        System.out.println(dishData.getAttributeList());
+        //先找到对应的categoryId，然后插入dish表，然后根据shopId插入shop表
+        QueryWrapper<Dish> wrapper=new QueryWrapper<Dish>()
+                .eq("category_id",dishData.getCategoryId());
+        List<Dish> dishList=dishDao.selectList(wrapper);
+        String categoryName = obtainCategoryName(dishData.getCategoryId());
+        for (Dish dish : dishList) {
+            dish.setCategoryName(categoryName);
+        }
+        System.out.println(dishList);
+        return DataResult.success(dishList);
     }
 }

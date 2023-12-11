@@ -7,6 +7,7 @@ public class DishData {
     private Integer dishId;
     private String dishName;
     private Integer categoryId;
+    private List<Integer> categoryIdList;
     private String categoryName;
     private String searchInput;
     private String picture;
@@ -18,6 +19,14 @@ public class DishData {
     private String weight;
     private String material;
     private Integer pageNum;
+
+    public List<Integer> getCategoryIdList() {
+        return categoryIdList;
+    }
+
+    public void setCategoryIdList(List<Integer> categoryIdList) {
+        this.categoryIdList = categoryIdList;
+    }
 
     public Integer getPageNum() {
         return pageNum;

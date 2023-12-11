@@ -1,14 +1,8 @@
 package com.example.takeawaybackend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.takeawaybackend.bean.Description;
-import com.example.takeawaybackend.bean.Dish;
-import com.example.takeawaybackend.bean.DishShop;
-import com.example.takeawaybackend.bean.Shop;
-import com.example.takeawaybackend.dao.DescriptionDao;
-import com.example.takeawaybackend.dao.DishDao;
-import com.example.takeawaybackend.dao.DishShopDao;
-import com.example.takeawaybackend.dao.ShopDao;
+import com.example.takeawaybackend.bean.*;
+import com.example.takeawaybackend.dao.*;
 import com.example.takeawaybackend.pojo.DishData;
 import com.example.takeawaybackend.pojo.ShopData;
 import com.example.takeawaybackend.tool.DataResult;
@@ -31,6 +25,8 @@ public class ShopController {
     private DescriptionDao descriptionDao;
     @Autowired
     private DishDao dishDao;
+    @Autowired
+    private RcDistrictDao rcDistrictDao;
     //查找所有商家
     @GetMapping("/detailAll")
     public DataResult detailAll(){
@@ -147,7 +143,27 @@ public class ShopController {
                 .eq("id",shop.getType());
         Description description=descriptionDao.selectOne(wrapper1);
         shop.setType(description.getDescriptionName());
+        RcDistrict addressProvince = pidFind(shop.getAddressProvince());
+        RcDistrict addressCity = pidFind(shop.getAddressCity());
+        RcDistrict addressCounty = pidFind(shop.getAddressCounty());
+        shop.setAddressProvinceName(addressProvince.getDistrict());
+        shop.setAddressCityName(addressCity.getDistrict());
+        shop.setAddressCountyName(addressCounty.getDistrict());
+
+        if(shop.getStorePhoto()==null){
+            shop.setStorePhoto("http://localhost:8080/upload/None.gif");
+        }
+        if(shop.getInPhoto()==null){
+            shop.setInPhoto("http://localhost:8080/upload/None.gif");
+        }
         return DataResult.success(shop);
+    }
+    //根据district_id找地区
+    private RcDistrict pidFind(String district_id){
+        QueryWrapper<RcDistrict> wrapper=new QueryWrapper<RcDistrict>()
+                .eq("district_id",district_id);
+        RcDistrict rcDistrict=rcDistrictDao.selectOne(wrapper);
+        return rcDistrict;
     }
     //保存或确认新建商家
     @PostMapping("/insertShop")

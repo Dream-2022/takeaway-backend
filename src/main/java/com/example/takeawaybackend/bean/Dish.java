@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class Dish {
     @TableId(type= IdType.AUTO)
@@ -24,4 +26,6 @@ public class Dish {
     private String material;//原料
     @TableField(exist = false)
     private Integer pageNum;//页数
+    @TableField(exist = false)
+    private List<DishAttribute> attributeList;
 }

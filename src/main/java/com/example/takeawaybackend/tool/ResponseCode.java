@@ -16,7 +16,9 @@ public enum ResponseCode {
     EMAIL_NOT_FOUND(400006,"邮箱不存在"),
     CODE_ERROR(400006,"验证码不正确"),
     NICKNAME_REPEAT(400007,"该昵称已被注册"),
-    TOKEN_ERROR(401000,"token 已失效,请重新登录")
+    CATEGORY_REPEAT(400008,"分类名不能重复创建"),
+    TOKEN_ERROR(401000,"token 已失效,请重新登录"),
+
     ;
     private final int code;
     private final String message;

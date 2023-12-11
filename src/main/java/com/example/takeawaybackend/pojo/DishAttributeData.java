@@ -10,7 +10,6 @@ public class DishAttributeData {
     private String attributeName;
     private String checked;
     private List<DishFlavor> flavorList;
-
     public Integer getId() {
         return id;
     }

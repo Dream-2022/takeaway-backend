@@ -48,5 +48,28 @@ public class DishAttributeController {
         }
         return DataResult.success(dishAttributeDataList);
     }
+    @PostMapping("/insertAttributeOne")
+    public DataResult insertAttributeOne(@RequestBody DishAttributeData dishAttributeData){
+        System.out.println("insertAttributeOne");
+        System.out.println("收到的数据是："+dishAttributeData.getDishId()+dishAttributeData.getAttributeName()+dishAttributeData.getChecked()+dishAttributeData.getFlavorList());
+
+        DishAttribute dishAttribute=new DishAttribute();
+        dishAttribute.setDishId(dishAttributeData.getDishId());
+        dishAttribute.setAttributeName(dishAttributeData.getAttributeName());
+        dishAttribute.setChecked(dishAttributeData.getChecked());
+
+        int insert = dishAttributeDao.insert(dishAttribute);
+        System.out.println("结果0"+insert);
+
+        for (DishFlavor dishFlavor : dishAttributeData.getFlavorList()) {
+            dishFlavor.setAttributeId(dishAttribute.getId());
+            System.out.println(dishFlavor);
+            int insert1=dishFlavorDao.insert(dishFlavor);
+            System.out.println("结果1"+insert1);
+        }
+
+        return DataResult.success(dishAttribute);
+    }
+
 
 }
