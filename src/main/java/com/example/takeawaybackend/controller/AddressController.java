@@ -132,7 +132,19 @@ public class AddressController {
         System.out.println(result);
         return DataResult.success(address1);
     }
+    //根据useId找到对应的默认地址
+    @PostMapping("/selectAddressDefault")
+    public DataResult selectAddressDefault(@RequestBody LoginData loginData){
+        System.out.println("selectAddressDefault");
+        System.out.println("收到的数据是："+loginData.getId());
 
+        QueryWrapper<Address> wrapper=new QueryWrapper<Address>()
+                .eq("user_id",loginData.getId())
+                .eq("address_default","1");
+        Address address=addressDao.selectOne(wrapper);
+        System.out.println(address);
+        return DataResult.success(address);
+    }
     //找省
     @GetMapping("/reDistrictProvinceAll")
     public DataResult reDistrictProvinceAll(){

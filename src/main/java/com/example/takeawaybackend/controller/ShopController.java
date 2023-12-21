@@ -7,7 +7,10 @@ import com.example.takeawaybackend.pojo.DishData;
 import com.example.takeawaybackend.pojo.ShopData;
 import com.example.takeawaybackend.tool.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,28 +29,39 @@ public class ShopController {
     @Autowired
     private DishDao dishDao;
     @Autowired
+    private AddressDao addressDao;
+    @Autowired
     private RcDistrictDao rcDistrictDao;
     //查找所有商家
-    @GetMapping("/detailAll")
-    public DataResult detailAll(){
-        System.out.println("detailAll");
-        List<Shop> shops=shopDao.selectList(null);
+    @PostMapping("/detailAll")
+    public DataResult detailAll(@RequestBody ShopData shopData){
+        System.out.println("detailAll"+shopData.getUserId());
+        //找用户的默认地址的addressCounty值
+        QueryWrapper<Address> wrapper2=new QueryWrapper<Address>()
+                .eq("user_id",shopData.getUserId())
+                .eq("address_default","1");
+        Address address=addressDao.selectOne(wrapper2);
+        if(address==null){
+            QueryWrapper<Shop> wrapper1=new QueryWrapper<Shop>()
+                    .eq("state","1");
+            List<Shop> shops=shopDao.selectList(wrapper1);
+            List<Shop> shops2=new ArrayList<>();
+            for (Shop shop : shops) {
+                //根据description_id,查找名称
+                QueryWrapper<Description> wrapper=new QueryWrapper<Description>()
+                        .eq("id",shop.getType());
+                Description description=descriptionDao.selectOne(wrapper);
+                shop.setType(description.getDescriptionName());
+                shops2.add(shop);
+            }
+            return DataResult.success(shops2);
+        }
+        QueryWrapper<Shop> wrapper1=new QueryWrapper<Shop>()
+                .eq("state","1")
+                .eq(!address.getAddressCounty().equals(""),"address_county",address.getAddressCounty());
+        List<Shop> shops=shopDao.selectList(wrapper1);
         List<Shop> shops2=new ArrayList<>();
         for (Shop shop : shops) {
-//            if(shop.getState().equals("0")){
-//                continue;
-//            }
-//            if(shop.getSaleNum()>100000){
-//                int saleStr=shop.getSaleNum() / 10000;
-//                shop.setSaleStr(saleStr+"万+");
-//            }
-//            else if(shop.getSaleNum()>1000){
-//                int saleStr = shop.getSaleNum() / 1000;
-//                shop.setSaleStr(saleStr+"000+");
-//            }
-//            else{
-//                shop.setSaleStr(shop.getSaleNum()+"");
-//            }
             //根据description_id,查找名称
             QueryWrapper<Description> wrapper=new QueryWrapper<Description>()
                     .eq("id",shop.getType());
@@ -139,9 +153,13 @@ public class ShopController {
         QueryWrapper<Shop> wrapper=new QueryWrapper<Shop>()
                 .eq("id",dishData.getShopId());
         Shop shop=shopDao.selectOne(wrapper);
+        System.out.println("111111111");
+        System.out.println(shop);
+        System.out.println(shop.getType());
         QueryWrapper<Description> wrapper1=new QueryWrapper<Description>()
                 .eq("id",shop.getType());
         Description description=descriptionDao.selectOne(wrapper1);
+        shop.setTypeId(shop.getType());
         shop.setType(description.getDescriptionName());
         RcDistrict addressProvince = pidFind(shop.getAddressProvince());
         RcDistrict addressCity = pidFind(shop.getAddressCity());
@@ -242,7 +260,7 @@ public class ShopController {
             return DataResult.success("成为商家");
         }
         else{
-            return DataResult.success("进入商家端");
+            return DataResult.success(shopX);
         }
     }
     //根据用户id查找商家信息

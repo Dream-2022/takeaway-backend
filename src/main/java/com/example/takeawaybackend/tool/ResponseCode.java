@@ -17,6 +17,7 @@ public enum ResponseCode {
     CODE_ERROR(400006,"验证码不正确"),
     NICKNAME_REPEAT(400007,"该昵称已被注册"),
     CATEGORY_REPEAT(400008,"分类名不能重复创建"),
+    ORDER_TIMEOUT(400009,"订单已超时，取消"),
     TOKEN_ERROR(401000,"token 已失效,请重新登录"),
 
     ;

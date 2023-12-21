@@ -23,7 +23,7 @@ public class CategoryController {
     //根据商家id查找全部分类
     @PostMapping("/selectCategoryAll")
     public DataResult selectCategoryAll(@RequestBody CategoryData categoryData){
-        System.out.println("selectCategoryAll"+categoryData.getShopId());
+        System.out.println("selectCategoryAll"+categoryData.getShopId()+","+categoryData.getCategoryName());
         QueryWrapper<Category> wrapper=new QueryWrapper<Category>()
                 .eq("shop_id",categoryData.getShopId());
         List<Category> categoryList=categoryDao.selectList(wrapper);
@@ -79,7 +79,19 @@ public class CategoryController {
         QueryWrapper<Category>wrapper1=new QueryWrapper<Category>()
                 .eq("id",categoryData.getId());
         categoryDao.update(category,wrapper1);
-
+        System.out.println(category);
+        Category category1=categoryDao.selectOne(wrapper1);
+        System.out.println(category1);
         return DataResult.success(category);
+    }
+    //根据分类id删除分类
+    @PostMapping("/deleteCategoryById")
+    public DataResult deleteCategoryById(@RequestBody CategoryData categoryData){
+        System.out.println("deleteCategoryById"+categoryData.getId());
+        QueryWrapper<Category> wrapper=new QueryWrapper<Category>()
+                .eq("id",categoryData.getId());
+        int result=categoryDao.delete(wrapper);
+        System.out.println(result);
+        return DataResult.success("删除成功");
     }
 }

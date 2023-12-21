@@ -39,6 +39,8 @@ public class Shop {
     private Float begin;//起送价
     private Float delivery;//配送费
     private String type;//商家类型
+    @TableField(exist = false)
+    private String typeId;
     private Float packing;//打包费
     private String state;//是否成功注册，0管理员未审核，1已注册，2已保存
     private String takeawayCall;//外卖电话

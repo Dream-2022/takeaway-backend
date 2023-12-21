@@ -3,7 +3,9 @@ package com.example.takeawaybackend.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.takeawaybackend.bean.Cart;
+import com.example.takeawaybackend.bean.Shop;
 import com.example.takeawaybackend.dao.CartDao;
+import com.example.takeawaybackend.dao.ShopDao;
 import com.example.takeawaybackend.pojo.CartData;
 import com.example.takeawaybackend.tool.DataResult;
 import com.google.gson.Gson;
@@ -22,18 +24,27 @@ public class CartController {
     @Autowired
     private CartDao cartDao;
     @Autowired
+    private ShopDao shopDao;
+    @Autowired
     private Gson gson;
 
-    //根据商家id查找全部分类
+    //根据userId查找全部购物车
     @PostMapping("/selectCartAll")
     public DataResult selectCartAll(@RequestBody CartData cartData){
         System.out.println("selectCartAll"+cartData.getUserId());
         QueryWrapper<Cart> wrapper=new QueryWrapper<Cart>()
                 .eq("user_id",cartData.getUserId());
         List<Cart> cartList=cartDao.selectList(wrapper);
+        for (Cart cart : cartList) {
+            QueryWrapper<Shop> wrapper1=new QueryWrapper<Shop>()
+                    .eq("id",cart.getShopId());
+            Shop shop=shopDao.selectOne(wrapper1);
+            cart.setShopName(shop.getName());
+        }
         System.out.println(cartList);
         return DataResult.success(cartList);
     }
+    //添加一个购物车
     @PostMapping("/addCart")
     public DataResult addCart(@RequestBody CartData cartData){
         System.out.println("addCart"+cartData.getUserId()+","+cartData.getShopId()+","+cartData.getDetailJson());
@@ -73,5 +84,27 @@ public class CartController {
 //        System.out.println(items.get(0).get());
 //        System.out.println(items.get(0).getDishIdList());
         return DataResult.success(cartX);
+    }
+    //删除一个购物车
+    @PostMapping("/deleteCart")
+    public DataResult deleteCart(@RequestBody CartData cartData){
+        System.out.println("deleteCart"+cartData.getUserId()+","+cartData.getShopId());
+        QueryWrapper<Cart> wrapper=new QueryWrapper<Cart>()
+                .eq("user_id",cartData.getUserId())
+                .eq("shop_id",cartData.getShopId());
+
+        int result=cartDao.delete(wrapper);
+        System.out.println("删除结果："+result);
+        return DataResult.success(result);
+    }
+    //根据userId删除全部购物车
+    @PostMapping("/deleteAllCartByUserId")
+    public DataResult deleteAllCartByUserId(@RequestBody CartData cartData){
+        System.out.println("deleteAllCartByUserId"+cartData.getUserId());
+        QueryWrapper<Cart> wrapper=new QueryWrapper<Cart>()
+                .eq("user_id",cartData.getUserId());
+        int insert=cartDao.delete(wrapper);
+        System.out.println("删除结果"+insert);
+        return DataResult.success("删除成功");
     }
 }

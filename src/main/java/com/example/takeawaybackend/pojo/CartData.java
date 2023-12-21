@@ -8,8 +8,10 @@ public class CartData {
     private Integer id;
     private Integer userId;
     private Integer shopId;
+
     private List<Dish> dishIdList;
     private String detailJson;
+
 
     public List<Dish> getDishIdList() {
         return dishIdList;
