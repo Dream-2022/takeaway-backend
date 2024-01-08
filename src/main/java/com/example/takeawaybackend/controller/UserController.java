@@ -146,4 +146,39 @@ public class UserController {
         System.out.println(insert);
         return DataResult.success(user);
     }
+    @PostMapping("/pre/user/selectByIdAndGenderAndNickname")
+    public DataResult selectByIdAndGenderAndNickname(@RequestBody LoginData loginData) throws MessagingException {
+        System.out.println("收到的数据是："+loginData.getId()+','+loginData.getNickname()+loginData.getGender());
+        QueryWrapper<User> wrapper=new QueryWrapper<User>()
+                .eq("email",loginData.getEmail());
+        User user1=userDao.selectOne(wrapper);
+        //该邮箱已被注册
+        if(user1!=null){
+            return DataResult.fail(EMAIL_ERROR);
+        }
+        //验证码不正确的情况
+        if(!map.get(loginData.getEmail()).equals(loginData.getCode())){
+            return DataResult.fail(CODE_ERROR);
+        }
+        //生成一个唯一账号
+        String newStr = ObtainUsername.obtainUsername();
+        while(true){
+            QueryWrapper<User> wrapper2=new QueryWrapper<User>()
+                    .eq("email",loginData.getEmail());
+            User user2=userDao.selectOne(wrapper2);
+            if(user2==null){
+                break;
+            }
+            newStr= ObtainUsername.obtainUsername();
+        }
+        System.out.println(2);
+        User user = new User();
+        user.setUsername(newStr);
+        user.setUserType("customer");
+        user.setEmail(loginData.getEmail());
+        user.setPassword(loginData.getPassword());
+        int insert = userDao.insert(user);
+        System.out.println(insert);
+        return DataResult.success(user);
+    }
 }

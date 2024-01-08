@@ -4,8 +4,11 @@ import java.util.Date;
 
 public class DishOrderData {
     private Integer id;
+    private String idValue;
     private Integer userId;
+    private String userIdValue;
     private Integer shopId;
+    private String shopIdValue;
     private String state;
     private String notes;
     private Integer tablewareNum;
@@ -16,6 +19,30 @@ public class DishOrderData {
     private String startTime;
     private String endTime;
     private String phone;
+
+    public String getIdValue() {
+        return idValue;
+    }
+
+    public void setIdValue(String idValue) {
+        this.idValue = idValue;
+    }
+
+    public String getUserIdValue() {
+        return userIdValue;
+    }
+
+    public void setUserIdValue(String userIdValue) {
+        this.userIdValue = userIdValue;
+    }
+
+    public String getShopIdValue() {
+        return shopIdValue;
+    }
+
+    public void setShopIdValue(String shopIdValue) {
+        this.shopIdValue = shopIdValue;
+    }
 
     public String getPhone() {
         return phone;

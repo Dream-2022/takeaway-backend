@@ -136,8 +136,93 @@ public class DishOrderController {
         System.out.println(dishOrderList);
         return DataResult.success(dishOrderList);
     }
+    //用户根据用户id和state查找他的订单
+    @PostMapping("/selectOrderByUserIdAndState")
+    public DataResult selectOrderByUserIdAndState(@RequestBody DishOrderData dishOrderData){
+        System.out.println("selectOrderByUserIdAndState"+dishOrderData.getUserId()+","+dishOrderData.getState());
+        //提交订单，已付款，已取消，申请退款，同意退款，拒绝退款
+        //全部，进行中，待评价，退款
 
+        QueryWrapper<DishOrder> wrapper=new QueryWrapper<DishOrder>()
+                .eq("user_id",dishOrderData.getUserId())
+                .orderByDesc("update_time");
+        if(dishOrderData.getState().equals("进行中")){
+            System.out.println("进行中");
+            wrapper.and(
+                    queryWrapper -> queryWrapper.eq("state", "提交订单")
+                            .or()
+                            .eq("state", "已付款")
+            );
+        }
+        if(dishOrderData.getState().equals("待评价")){//待评价这里还有一个判断！！！
+            System.out.println("待评价");
+            wrapper.eq("state","已完成");
+        }
+        if(dishOrderData.getState().equals("已评价")){
+            System.out.println("已评价");
+            wrapper.eq("state","已评价");
+        }
+        if(dishOrderData.getState().equals("退款")){
+            System.out.println("退款");
+            wrapper.and(
+                    queryWrapper -> queryWrapper.eq("state", "申请退款")
+                            .or()
+                            .eq("state", "同意退款")
+                            .or()
+                            .eq("state","拒绝退款")
+            );
+        }
 
+        List<DishOrder> dishOrderList = dishOrderDao.selectList(wrapper);
+        System.out.println("selectDishOrderByShpIdAndPageNum");
+        for (DishOrder order : dishOrderList) {
+            if(order.getNotes()==null||order.getNotes().equals("")) {
+                order.setNotes("无");
+            }
+        }
+        System.out.println(dishOrderList);
+        return DataResult.success(dishOrderList);
+    }
+    //管理员根据id，商家id，用户id，起始时间，电话，state查找订单
+    @PostMapping("/selectOrderByCondition")
+    public DataResult selectOrderByCondition(@RequestBody DishOrderData dishOrderData){
+        System.out.println("selectOrderByCondition"+dishOrderData.getIdValue()+","+dishOrderData.getUserIdValue()+","+dishOrderData.getShopIdValue()+","+dishOrderData.getPhone()+","+dishOrderData.getState()+","+dishOrderData.getStartTime()+","+dishOrderData.getEndTime());
+        System.out.println(dishOrderData.getPageNum());
+        IPage<DishOrder> page=new Page<>();
+        page.setCurrent(dishOrderData.getPageNum());//设置第几页的
+        page.setSize(7);
+        QueryWrapper<DishOrder> wrapper=new QueryWrapper<DishOrder>()
+                .like(!dishOrderData.getIdValue().equals(""),"id",dishOrderData.getIdValue())
+                .like(!dishOrderData.getUserIdValue().equals(""),"user_id",dishOrderData.getUserIdValue())
+                .like(!dishOrderData.getShopIdValue().equals(""),"shop_id",dishOrderData.getShopIdValue())
+                .like(!dishOrderData.getPhone().equals(""),"phone",dishOrderData.getPhone())
+                .eq(!dishOrderData.getState().equals("全部"),"state",dishOrderData.getState())
+                .ge(!dishOrderData.getStartTime().equals(""),"update_time", dishOrderData.getStartTime())
+                .le(!dishOrderData.getEndTime().equals(""),"update_time", dishOrderData.getEndTime())
+                .orderByDesc("update_time");
 
+        IPage<DishOrder> iPageList = dishOrderDao.selectPage(page,wrapper);
+        System.out.println(iPageList.getRecords());
+        for (DishOrder dishOrder : iPageList.getRecords()) {
+            dishOrder.setPageNum((int) iPageList.getPages());
+            if(dishOrder.getNotes()==null||dishOrder.getNotes().equals("")) {
+                dishOrder.setNotes("无");
+            }
+        }
+        System.out.println(iPageList.getRecords());
+        return DataResult.success(iPageList.getRecords());
+    }
+    //管理员根据id更改订单状态
+    @PostMapping("/updateOrderStateById")
+    public DataResult updateOrderStateById(@RequestBody DishOrderData dishOrderData){
+        System.out.println("updateOrderStateById"+dishOrderData.getId()+dishOrderData.getState());
+        DishOrder dishOrder=new DishOrder();
+        dishOrder.setState(dishOrderData.getState());
+        QueryWrapper<DishOrder> wrapper=new QueryWrapper<DishOrder>()
+                .eq("id",dishOrderData.getId());
+        int update=dishOrderDao.update(dishOrder,wrapper);
+        System.out.println("更新："+update);
+        return DataResult.success("更新成功");
+    }
 
 }

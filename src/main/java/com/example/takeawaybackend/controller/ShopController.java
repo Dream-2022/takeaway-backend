@@ -32,6 +32,8 @@ public class ShopController {
     private AddressDao addressDao;
     @Autowired
     private RcDistrictDao rcDistrictDao;
+    @Autowired
+    private CategoryDao categoryDao;
     //查找所有商家
     @PostMapping("/detailAll")
     public DataResult detailAll(@RequestBody ShopData shopData){
@@ -41,6 +43,7 @@ public class ShopController {
                 .eq("user_id",shopData.getUserId())
                 .eq("address_default","1");
         Address address=addressDao.selectOne(wrapper2);
+        //如果用户没有默认地址，就搜索全部
         if(address==null){
             QueryWrapper<Shop> wrapper1=new QueryWrapper<Shop>()
                     .eq("state","1");
@@ -70,6 +73,30 @@ public class ShopController {
             shops2.add(shop);
         }
         return DataResult.success(shops2);
+    }
+    //通过shopId和state和商家类型和商家名称获取商家信息
+    @PostMapping("/selectShopByIdAndNameAndState")
+    public DataResult selectShopByIdAndNameAndState(@RequestBody ShopData shopData){
+        System.out.println("selectShopByIdAndNameAndState"+shopData.getIdValue()+","+shopData.getName()+","+shopData.getState());
+        //找用户的默认地址的addressCounty值
+        QueryWrapper<Shop> wrapper=new QueryWrapper<Shop>()
+                .like(!shopData.getIdValue().equals(""),"id",shopData.getIdValue())
+                .like(!shopData.getState().equals("0"),"state",shopData.getState())
+                .like(!shopData.getName().equals(""),"name",shopData.getName());
+        List<Shop> shops=shopDao.selectList(wrapper);
+        for (Shop shop : shops) {
+            //根据description_id,查找名称
+            QueryWrapper<Description> wrapper1=new QueryWrapper<Description>()
+                    .eq("id",shop.getType());
+            Description description=descriptionDao.selectOne(wrapper1);
+            shop.setType(description.getDescriptionName());
+
+            shop.setAddressProvinceName(pidFind(shop.getAddressProvince()).getDistrict());
+            shop.setAddressCityName(pidFind(shop.getAddressCity()).getDistrict());
+            shop.setAddressCountyName(pidFind(shop.getAddressCounty()).getDistrict());
+        }
+        System.out.println(shops);
+        return DataResult.success(shops);
     }
     //根据关键词查找商家
     @PostMapping("/selectShopKeywords")
@@ -144,12 +171,36 @@ public class ShopController {
         }
 
     }
-    //根据商家Id（id）查找商家信息
+    //根据商家id查找商家信息
+    @PostMapping("/selectShopById")
+    public DataResult selectShopById(@RequestBody ShopData shopData){
+        System.out.println("selectShopById");
+        System.out.println("获取到的信息是："+shopData.getId());
+        // 通过商家id查找
+        QueryWrapper<Shop> wrapper = new QueryWrapper<Shop>()
+                .eq("id", shopData.getId());
+        Shop shop = shopDao.selectOne(wrapper);
+        return DataResult.success(shop);
+    }
+    //根据商家id更新商家状态
+    @PostMapping("/updateShopStateById")
+    public DataResult updateShopStateById(@RequestBody ShopData shopData){
+        System.out.println("updateShopStateById");
+        System.out.println("获取到的信息是："+shopData.getId()+","+shopData.getState());
+        // 通过商家id查找
+        QueryWrapper<Shop> wrapper = new QueryWrapper<Shop>()
+                .eq("id", shopData.getId());
+        Shop shopX=new Shop();
+        shopX.setState(shopData.getState());
+        int update=shopDao.update(shopX,wrapper);
+        System.out.println("更新："+update);
+        return DataResult.success(shopX);
+    }
+    //根据商家Id（id）和type查找商家信息
     @PostMapping("/selectById")
     public DataResult selectById(@RequestBody DishData dishData){
         System.out.println("selectById");
         System.out.println("收到的数据是："+dishData.getShopId());
-
         QueryWrapper<Shop> wrapper=new QueryWrapper<Shop>()
                 .eq("id",dishData.getShopId());
         Shop shop=shopDao.selectOne(wrapper);
@@ -237,7 +288,7 @@ public class ShopController {
         }
         //更新商家信息
         else{
-            if(shopX.getState().equals("0")&&shopData.getState().equals("2")){
+            if(shopX.getState().equals("0")&&shopData.getState().equals("4")){
                 System.out.println("第一次是确认，第二次是保存");
                 shop.setState("0");
             }
@@ -290,6 +341,26 @@ public class ShopController {
             }
         }
         return disheList;
+    }
+    //通过shopId找到所有的categoryId及其对应的菜品
+    @PostMapping("/selectDishByShopIdAndObtainCategory")
+    public DataResult selectDishByShopIdAndObtainCategory(@RequestBody ShopData shopData){
+        System.out.println("selectDishByShopIdAndObtainCategory"+shopData.getId());
+
+        QueryWrapper<Category> wrapper1=new QueryWrapper<Category>()
+                .eq("shop_id",shopData.getId());
+        List<Category> categoryList= categoryDao.selectList(wrapper1);
+        System.out.println("selectDishByShopIdAndObtainCategory1");
+        System.out.println(categoryList);
+        for (Category category : categoryList) {
+            QueryWrapper<Dish> wrapper2=new QueryWrapper<Dish>()
+                    .eq("category_id",category.getId());
+            List<Dish> dishList=dishDao.selectList(wrapper2);
+            category.setDishList(dishList);
+        }
+        System.out.println("selectDishByShopIdAndObtainCategory2");
+        System.out.println(categoryList);
+        return DataResult.success(categoryList);
     }
 }
 /*

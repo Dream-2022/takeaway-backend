@@ -63,6 +63,37 @@ public class DishController {
         System.out.println(dishes);
         return DataResult.success(dishes);
     }
+    //查找一个店铺的所有商品
+    @PostMapping("/selectDishByIdAndShopIdAndNameAndDetail")
+    public DataResult selectDishByIdAndShopIdAndNameAndDetail(@RequestBody DishData dishData){
+        System.out.println("selectDishByIdAndShopIdAndNameAndDetail");
+        System.out.println("收到的数据是："+dishData.getIdValue()+","+dishData.getShopIdValue()+","+dishData.getDishName()+","+dishData.getState()+","+dishData.getDetail());
+        QueryWrapper<Dish> wrapper=new QueryWrapper<Dish>()
+                .like(!dishData.getIdValue().equals(""),"id",dishData.getIdValue())
+                .like(!dishData.getDishName().equals(""),"dish_name",dishData.getDishName())
+                .eq(!dishData.getState().equals("0"),"sale_state",dishData.getState())
+                .like(!dishData.getDetail().equals(""),"detail",dishData.getDetail()) ;
+        List<Dish>dishList=dishDao.selectList(wrapper);
+        List<Dish>dishes=new ArrayList<>();
+        if(!dishData.getShopIdValue().equals("")){
+            for (Dish dish : dishList) {
+                QueryWrapper<DishShop> wrapper1=new QueryWrapper<DishShop>()
+                        .eq("dish_id",dishData.getIdValue())
+                        .eq("shop_id",dishData.getShopIdValue());
+                DishShop dishShop=dishShopDao.selectOne(wrapper1);
+                System.out.println(dishShop);
+                if(dishShop!=null){
+                    dishes.add(dish);
+                }
+            }
+        }else{
+            dishes=dishList;
+        }
+
+        System.out.println(dishList);
+        System.out.println(dishes);
+        return DataResult.success(dishList);
+    }
     //不用分页查找
     @PostMapping("/dishDetailAllNoPage")
     public DataResult dishDetailAllNoPage(@RequestBody DishData dishData){
@@ -233,6 +264,20 @@ public class DishController {
         int insert1=dishShopDao.insert(dishShop);
         System.out.println(insert1+","+dishData);
         return DataResult.success(dish);
+    }
+    //通过Id更新菜品saleState
+    @PostMapping("/updateDishStateById")
+    public DataResult updateDishStateById(@RequestBody DishData dishData){
+        System.out.println("updateDishStateById");
+        System.out.println("收到的数据是："+dishData.getDishId()+","+dishData.getSaleState());
+        //先找到对应的categoryId，然后插入dish表，然后根据shopId插入shop表
+        QueryWrapper<Dish> wrapper=new QueryWrapper<Dish>()
+                .eq("id",dishData.getDishId());
+        Dish dish=new Dish();
+        dish.setSaleState(String.valueOf(dishData.getSaleState()));
+        int update=dishDao.update(dish,wrapper);
+        System.out.println("更新："+update);
+        return DataResult.success("更新成功");
     }
     //通过categoryId找到所有的商品
     @PostMapping("/selectDishByCategoryId")

@@ -5,14 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class Category {
+public class Report {
     @TableId(type= IdType.AUTO)
     private Integer id;
+    private Integer userId;
     private Integer shopId;
-    private String categoryName;
+    private String content;
+    private String state;
     @TableField(exist = false)
-    private List<Dish> dishList;
+    private User user;
+    @TableField(exist = false)
+    private Shop shop;
 }

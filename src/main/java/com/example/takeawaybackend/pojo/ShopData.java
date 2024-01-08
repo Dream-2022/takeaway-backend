@@ -1,11 +1,10 @@
 package com.example.takeawaybackend.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-
 import java.sql.Timestamp;
 
 public class ShopData {
     private Integer id;
+    private String idValue;
     private Integer userId;
     private String name;//商家名称
     private String addressProvince;
@@ -18,20 +17,27 @@ public class ShopData {
     private String inPhoto;//店内照
     private String background;//背景图片
     private Integer saleNum;//销售量
-    @TableField(exist = false)
     private String saleStr;
     private Timestamp createAt;//创建时间
     private Float score;//评分
     private Float begin;//起送价
     private String type;//商家类型
     private Float packing;//打包费
-    private String state;//是否成功注册，0管理员未审核，1已注册，2已保存
+    private String state;//是否成功注册，"0">全部,"1">已审核,value="2">未审核,"3">商家停售,"4">保存,"5">管理员停售
     private String takeawayCall;//外卖电话
     private String contactCall;//联系电话
     private String realName;//姓名
     private Float delivery;//配送费
     public Integer getId() {
         return id;
+    }
+
+    public String getIdValue() {
+        return idValue;
+    }
+
+    public void setIdValue(String idValue) {
+        this.idValue = idValue;
     }
 
     public void setId(Integer id) {

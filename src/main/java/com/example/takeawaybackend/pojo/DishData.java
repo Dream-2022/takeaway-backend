@@ -4,7 +4,9 @@ import java.util.List;
 
 public class DishData {
     private Integer shopId;
+    private String shopIdValue;
     private Integer dishId;
+    private String idValue;
     private String dishName;
     private Integer categoryId;
     private List<Integer> categoryIdList;
@@ -14,11 +16,36 @@ public class DishData {
     private  Float price;
     private  Integer number;
     private Integer saleState;
+    private String state;
     private String detail;
     private Float pack;
     private String weight;
     private String material;
     private Integer pageNum;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getShopIdValue() {
+        return shopIdValue;
+    }
+
+    public void setShopIdValue(String shopIdValue) {
+        this.shopIdValue = shopIdValue;
+    }
+
+    public String getIdValue() {
+        return idValue;
+    }
+
+    public void setIdValue(String idValue) {
+        this.idValue = idValue;
+    }
 
     public List<Integer> getCategoryIdList() {
         return categoryIdList;

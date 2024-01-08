@@ -42,7 +42,7 @@ public class Shop {
     @TableField(exist = false)
     private String typeId;
     private Float packing;//打包费
-    private String state;//是否成功注册，0管理员未审核，1已注册，2已保存
+    private String state;//是否成功注册，"0">全部,"1">已审核,value="2">未审核,"3">商家停售,"4">保存,"5">管理员停售
     private String takeawayCall;//外卖电话
     private String contactCall;//联系电话
     private String realName;//姓名
